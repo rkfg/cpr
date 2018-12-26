@@ -12,7 +12,11 @@ src = ['cpr/auth.cpp',
 'cpr/ssl_options.cpp',
 'cpr/timeout.cpp',
 'cpr/util.cpp']
-inc = include_directories('include')
+inc = [include_directories('include')]
+if meson.is_cross_build() and target_machine.cpu_family() == 'arm'
+    inc += include_directories(meson.get_cross_property('root') + '/usr/include/arm-linux-gnueabihf')
+endif
+
 libcurl = dependency('libcurl')
 lib = static_library('cpr', src, dependencies : libcurl, include_directories : inc)
-dep = declare_dependency(include_directories : inc, link_with : lib)
+cpr_dep = declare_dependency(include_directories : inc, link_with : lib)
